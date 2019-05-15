@@ -438,7 +438,7 @@ def get_dominancy_score(*args):
 # score( 0.1, 0.9, 10, 100)
 # score( 0.01, 0.1, 10, 100)
 
-if __name__ == '__main__':
+if __name__ == '__main__': #4 params r r z z
     if len(sys.argv) < 2:
         print("usage: ./GIG-incremental.py <mutation rate/r> <crossover rate/r> <generations amount/z> <population size/z>")
         # print("usage: ./GIG-incremental.py -d")

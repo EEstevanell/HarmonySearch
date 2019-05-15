@@ -56,7 +56,7 @@ def gradient_descent(model, eta, max_iterations=1e4, epsilon=1e-5,
 # max_iterations = 10
 # epsilon = 0.00002
 
-if __name__ == '__main__':
+if __name__ == '__main__': #3 params: r z r
     if len(sys.argv) < 4:
         print("Usage: ./gradient_descent <eta> <max_iterations> <epsilon>")
         exit()

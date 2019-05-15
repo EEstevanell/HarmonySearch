@@ -1,7 +1,7 @@
 import os
 import scipy
 import time
-import winsound
+# import winsound
 from algorithm import Algorithm
 from harmony_search import HarmonySearch
 
@@ -47,10 +47,11 @@ class ParamsOptimizer:
     
     ############################## Console Methods ##################################
     def play_end_music(self):
-        winsound.Beep(2000,200)
-        winsound.Beep(2500,200)
-        winsound.Beep(3000,300)
-        winsound.Beep(2000,400)
+        # winsound.Beep(2000,200)
+        # winsound.Beep(2500,200)
+        # winsound.Beep(3000,300)
+        # winsound.Beep(2000,400)
+        pass
     def help(self):
         print("\n--------------- Registered Commands -----------------\n")
         for command in self.methods.keys():
