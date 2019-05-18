@@ -1,8 +1,6 @@
 Al iniciar la ejecución de la instruccion "start" del programa se le presentarán una serie de pasos:
 
 
-
-
 **paso 1:** "-Insert the command you use to run your algorithm (no params and full paths required) in a shell as this were it-"
 
     Este paso refiere a la especificación de un comando que pueda ser directamente ejecutado en algún shell que permita la ejecución del programa.
@@ -17,8 +15,6 @@ _ejemplo:_
     se exige que se obvie estos y nos quedamos con el comando sin parámetros como presentado en el ejemplo.
 
 
-
-
 **paso 2:** "Insert for each parameter needed it's type (z means integer, r means real)"
 
     En este paso se exigirá que se introduzca un identificador por cada parámetro en forma de cadena separada por espacios.
@@ -28,8 +24,6 @@ _ejemplo:_
     r z r
 
     siendo válida dicha entrada y definiendo 3 parámetros de entrada, el 1ro real al igual que el 3ro mientras que el 2do entero.
-
-
 
 
 **paso 3:** "-Insert Lower and Upper search boundries for integer param #%d [example: 0 100]" ó "-Insert Lower and Upper search boundries for real param #%d [example: 1,5 99,9]" 
@@ -43,8 +37,6 @@ _ejemplo:_
     1,5 99 (caso real)
 
 
-
-    
 **paso 4:** "Insert optimal value (if none then you should expect minimization)" 
 
     Se requiere una declaración del óptimo esperado (en cuyo caso se minimiza el módulo de la resta del óptimo con el valor devuelto por el algoritmo del usuario).
@@ -55,8 +47,25 @@ _ejemplo:_
     en este caso se minimizará |100 - alg(params)|
 
 
-
 Luego comenzara la ejecución del algoritmo Harmony Search! A esperar resultados! (estaran claros a la hora de imprimirlos)
+
+
+**EJEMPLO DE EJECUCION OFRECIDO:** Se le ofrece un ejemplo de prueba ya listo:
+
+    ---paso 1---
+        python D:\ .... \algorithms\gradient_descent.py (full path required)
+
+    ---paso 2---
+        r z r
+
+    ---paso 3---
+        0.01 0.9         (eta)
+        2 20             (iterations amount)
+        0.0000001 0.9    (epsilon)
+
+    ---paso 4---
+        no se especifica y se elije minimizar
+
 
 NOTA:
     se recomienda firmemente que el usuario modifique su programa que contiene el algoritmo para que evalúe un conjunto de entrenamiento aceptable que cubra
