@@ -1,0 +1,6 @@
+python D:\Projects\github\HarmonySearch\algorithms\gradient_descent.py
+r z r
+0 1
+2 20
+0 1
+1

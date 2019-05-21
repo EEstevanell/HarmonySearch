@@ -1,5 +1,6 @@
 import os
-import scipy
+import sys
+# import scipy
 import time
 # import winsound
 from algorithm import Algorithm
@@ -25,11 +26,18 @@ class ParamsOptimizer:
         self.methods['help'] = self.help
         self.methods['q'] = self.q
         self.methods['start'] = self.query_algorithm
+        self.methods['load'] = self.load
 
         self.methods_doc = {}
         self.methods_doc['help'] = "list of commands and short help message"
         self.methods_doc['q'] = "exit program"
         self.methods_doc['start'] = "begin Data Collection and runs Harmony Search algorithm"
+        self.methods_doc['load'] = "load data configuration from file\n\
+                                -----protocol----\n\
+                                line 1: Command\n\
+                                line 2: params\n\
+                                line 3 to line 2 + k (if there were declared k params): boundries\n\
+                                line 3 + k: optimal value (if required)"
 
     def set_all_heuristics(self):
         self.harmony_search = HarmonySearch(75)
@@ -46,6 +54,38 @@ class ParamsOptimizer:
                 print("no instruction %s declared" %(e))
     
     ############################## Console Methods ##################################
+    def _load(self, file):
+        config = open(file, "r")
+        try:
+            raw = config.readline()
+            commad = raw.split()
+        except:
+            print("error on line 1, check if it was a proper declaration of a command..")
+        try:
+            params = config.readline().split()
+            boundries = []
+            j = 0
+            for param in params:
+                boundry = config.readline()
+                if param == "z":
+                    boundries.append(self.get_integer_boundry(j, boundry))
+                elif param == "r":
+                    boundries.append(self.get_float_boundry(j, boundry))
+                j+=1
+        except:
+            print("error on line 2")
+        try:
+            mode, optimal_value = self.get_optimal_value(config.readline())
+        except:
+            mode = None
+            optimal_value = None
+            pass
+            # print("error on line 3")
+        config.close()
+        return self.query_algorithm( commad, raw, params, mode, optimal_value, boundries, True)
+    def load(self):
+        file = input("config file: ")
+        return self._load(file)    
     def play_end_music(self):
         # winsound.Beep(2000,200)
         # winsound.Beep(2500,200)
@@ -67,22 +107,29 @@ class ParamsOptimizer:
     def get_command(self):
         raw = input("\n-Insert the command you use to run your algorithm (no params and full paths required) in a shell as this were it-\n$ ")
         return (raw.split(), raw)
-    def get_params_types(self):
+    def get_params_types(self, params = None):
         while True:
-            params = str(input("\nInsert for each parameter needed it's type (z means integer, r means real)\n--> ")).split()
+            if not params:
+                params = str(input("\nInsert for each parameter needed it's type (z means integer, r means real)\n--> ")).split()
             params_types = []
             for param in params:
                 if param == "z":
                     params_types.append(True)
                 elif param == "r":
                     params_types.append(False)
-            confirmation = input("%d parameters have been correctly identified, want to proceed? y|n\n--> " %len(params_types))
-            if confirmation != "n":
+            if not params:
+                confirmation = input("%d parameters have been correctly identified, want to proceed? y|n\n--> " %len(params_types))
+                if confirmation != "n":
+                    return params_types
+            else:
                 return params_types
-    def get_integer_boundry(self, iparam):
+    def get_integer_boundry(self, iparam, boundry = None):
         while True:
             try:
-                lo,up = str(input("\n-Insert Lower and Upper search boundries for integer param #%d [example: 0 100]\n-->" %iparam)).split()
+                if not boundry:
+                    lo,up = str(input("\n-Insert Lower and Upper search boundries for integer param #%d [example: 0 100]\n-->" %iparam)).split()
+                else:
+                    lo,up = boundry.split()
             except:
                 print("[ERROR] not enough arguments for boundries declaration param $%d, retrying" %iparam)
                 continue
@@ -92,10 +139,13 @@ class ParamsOptimizer:
                 print("[ERROR] at least one of the arguments could'nt be parsed into integer, retrying")
                 continue
             return boundries  
-    def get_float_boundry(self, iparam):
+    def get_float_boundry(self, iparam, boundry = None):
         while True:
             try:
-                lo,up = str(input("\n-Insert Lower and Upper search boundries for real param #%d [example: 1,5 99,9]\n-->" %iparam)).split()
+                if not boundry:
+                    lo,up = str(input("\n-Insert Lower and Upper search boundries for real param #%d [example: 1,5 99,9]\n-->" %iparam)).split()
+                else:
+                    lo,up = boundry.split()
             except:
                 print("[ERROR] not enough arguments for boundries declaration param $%d, retrying" %iparam)
                 continue
@@ -105,34 +155,40 @@ class ParamsOptimizer:
                 print("[ERROR] at least one of the arguments could'nt be parsed into float, retrying")
                 continue
             return boundries
-    def get_optimal_value(self):
+    def get_optimal_value(self, ov = None):
         while True:
-            val = input("\nInsert optimal value (if none then you should expect minimization)\n--> ")
+            if not ov:
+                val = input("\nInsert optimal value (if none then you should expect minimization)\n--> ")
+            else:
+                val = ov
             if val == "":
-                return (False, 0)
+                return (False, None)
             try:
                 return (True,float(val))
             except:
                 print("[ERROR] optimal value could'nt be parsed into float, try again")
-    def query_algorithm(self):
-        command, raw = self.get_command()
+    def query_algorithm(self, command = None, raw = None, params = None, mode = False, optimal_value = "", boundries = [], ovpass = False):
+        if not command:
+            command, raw = self.get_command()
 
         print("\n|---------------------------------------|\
                \n|--------Starting Info Gathering--------|\
                \n|---------------------------------------|\n")
 
-        params = self.get_params_types()
-        boundries = []
+        params = self.get_params_types(params = params)
+        # boundries = []
         j = 0
 
-        for param in params:
-            if param:
-                boundries.append(self.get_integer_boundry(j))
-            else:
-                boundries.append(self.get_float_boundry(j))
-            j+=1
+        if not boundries:
+            for param in params:
+                if param:
+                    boundries.append(self.get_integer_boundry(j))
+                else:
+                    boundries.append(self.get_float_boundry(j))
+                j+=1
 
-        mode, optimal_value = self.get_optimal_value()
+        if not ovpass:
+            mode, optimal_value = self.get_optimal_value()
         if not mode:
             message = "*Minimize*"
         else:
@@ -162,5 +218,16 @@ class ParamsOptimizer:
                 print(e)
         print("Exiting Program, hope you enjoyed our time together!")
 
-# ParamsOptimizer(1).play_end_music()
-ParamsOptimizer(2).run()
+# ParamsOptimizer(1)._load("config.txt")
+# ParamsOptimizer(2).run()
+
+if __name__ == "__main__":
+    po = ParamsOptimizer(0)
+    if len(sys.argv) > 2:
+        print("usage: python param_optimizer.py [config-file]")
+        exit()
+    if len(sys.argv) == 2:
+        file = sys.argv[1]
+        po._load(file)
+    else:
+        po.run()
